@@ -54,7 +54,8 @@
 		"test-MOCHA": "./node_modules/.bin/_mocha $(find ./test -type f -name '*.spec.js')",
 		"test-COVERAGE": "cross-env NODE_ENV=development nyc npm run test-MOCHA --silent",
 		"lint": "xo && npm run lint-python",
-		"lint-python": "./scripts/pep8fix.sh"
+		"lint-python": "./scripts/pep8fix.sh",
+		"prepare": "husky install"
 	},
 	"dependencies": {
 		"punycode": "^2.1.1"
@@ -69,11 +70,16 @@
 		"gulp-prettier": "^4.0.0",
 		"gulp-rename": "^2.0.0",
 		"gulp-terser": "^2.1.0",
+		"husky": "^8.0.1",
+		"lint-staged": "^13.0.0",
 		"mocha": "^10.0.0",
 		"nyc": "^15.1.0",
 		"prettier": "^2.6.2",
 		"prettier-config-xo": "^2.0.0",
 		"semantic-release": "^18.0.1",
 		"xo": "^0.48.0"
+	},
+	"lint-staged": {
+		"*": "prettier -u --write"
 	}
 }
