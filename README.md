@@ -20,8 +20,8 @@ the full mapping for these strings, as defined by
 
 ## Resources
 
-* [Documentation](https://centralnic-reseller.github.io/centralnic-reseller/docs/hexonet/idna-uts46/)
-* [Release Notes](https://github.com/hexonet/idna-uts46/releases)
+- [Documentation](https://centralnic-reseller.github.io/centralnic-reseller/docs/hexonet/idna-uts46/)
+- [Release Notes](https://github.com/hexonet/idna-uts46/releases)
 
 ## License
 

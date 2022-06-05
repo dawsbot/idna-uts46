@@ -71,6 +71,7 @@
 		"gulp-terser": "^2.1.0",
 		"mocha": "^10.0.0",
 		"nyc": "^15.1.0",
+		"prettier": "^2.6.2",
 		"prettier-config-xo": "^2.0.0",
 		"semantic-release": "^18.0.1",
 		"xo": "^0.48.0"
