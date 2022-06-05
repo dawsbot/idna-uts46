@@ -1,2 +1,2 @@
 #!/bin/bash
-pycodestyle --first --show-source --show-pep8 ./*.py
+pycodestyle --first --show-source --show-pep8 ./scripts/*.py

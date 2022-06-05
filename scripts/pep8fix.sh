@@ -1,2 +1,2 @@
 #!/bin/bash
-autopep8 -i -a -a ./*.py
+autopep8 -i -a -a ./scripts/*.py
