@@ -2,12 +2,7 @@ name: Release
 on:
   # will run for every branch, except tags. See RSRMID-206.
   push:
-    # Sequence of patterns matched against refs/heads
-    branches:
-      - '**'
-    # Sequence of patterns matched against refs/tags
-    tags-ignore:
-      - '**'
+    branches: [master]
   pull_request:
     branches:
       - '**'
@@ -16,13 +11,13 @@ on:
 
 jobs:
   test:
-    name: Test Job
+    name: 🧪 npm test
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.actor != 'dependabot[bot]')
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: ['18', '16', '14']
+        node-version: ['18', '16', '14', '12']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:

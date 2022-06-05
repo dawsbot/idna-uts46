@@ -11,8 +11,7 @@
 	"typings": "index.d.ts",
 	"license": "MIT",
 	"engines": {
-		"node": ">=14.17.0",
-		"npm": ">=6.14.13"
+		"node": ">=12"
 	},
 	"homepage": "https://github.com/hexonet/idna-uts46",
 	"repository": "github:hexonet/idna-uts46",
