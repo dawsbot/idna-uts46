@@ -54,7 +54,8 @@
 		"test-COVERAGE": "cross-env NODE_ENV=development nyc npm run test-MOCHA --silent",
 		"lint": "xo && npm run lint-python",
 		"lint-python": "./scripts/pep8fix.sh",
-		"prepare": "husky install"
+		"prepare": "husky install",
+		"build": "gulp build"
 	},
 	"dependencies": {
 		"punycode": "^2.1.1"
