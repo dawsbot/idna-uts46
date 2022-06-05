@@ -8,7 +8,7 @@
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/hexonet/idna-uts46/blob/master/CONTRIBUTING.md)
 
 This module is a IDNA UTS46 connector library for javascript.
-This is a maintained fork of the idna-uts46 library originally written by jcranmer.
+This is a maintained fork of the idna-uts46 library originally written by jcranmer then forked by hexonet.
 
 The [JS Punycode converter library](https://github.com/bestiejs/punycode.js/) is
 a great tool for handling Unicode domain names, but it only implements the
@@ -20,16 +20,8 @@ the full mapping for these strings, as defined by
 
 ## Resources
 
-* [Documentation](https://centralnic-reseller.github.io/centralnic-reseller/docs/hexonet/idna-uts46/)
-* [Release Notes](https://github.com/hexonet/idna-uts46/releases)
-
-## Authors
-
-NOTE: As mentioned, initial work done by jcranmer.
-
-* **Kai Schwarz** - *lead development* - [PapaKai](https://github.com/papakai)
-
-See also the list of [contributors](https://github.com/hexonet/idna-uts46/graphs/contributors) who participated in this project.
+- [Documentation](https://centralnic-reseller.github.io/centralnic-reseller/docs/hexonet/idna-uts46/)
+- [Release Notes](https://github.com/hexonet/idna-uts46/releases)
 
 ## License
 
