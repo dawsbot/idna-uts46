@@ -51,7 +51,8 @@
     "lint": "xo && npm run lint-python",
     "lint-python": "./scripts/pep8fix.sh",
     "prepare": "husky install",
-    "build": "gulp build"
+    "build": "gulp build",
+    "build:unicode-tables": "node ./scripts/build-unicode-tables 14.0.0 && python3 ./scripts/build-unicode-tables.py 14.0.0"
   },
   "dependencies": {
     "punycode": "^2.1.1"
@@ -59,6 +60,7 @@
   "devDependencies": {
     "@hexonet/semantic-release-github-npm-config": "^2.0.4",
     "@semantic-release/exec": "^6.0.2",
+    "axios": "^0.27.2",
     "cross-env": "^7.0.3",
     "fancy-log": "^2.0.0",
     "gulp": "^4.0.2",

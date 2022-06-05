@@ -33,10 +33,6 @@ def download_unicode(version):
     print("Resource Files from www.unicode.org ...")
     uribase = "http://www.unicode.org/Public/"
     idna_tables = uribase + "idna/" + version
-    print("... " + idna_tables + "/IdnaTestV2.txt")
-    urllib.request.urlretrieve(
-        idna_tables + "/IdnaTestV2.txt",
-        "test/IdnaTest.txt")
     infd = urllib.request.urlopen(idna_tables + "/IdnaMappingTable.txt")
     dgc = urllib.request.urlopen(
         uribase + version + "/ucd/extracted/DerivedGeneralCategory.txt"
