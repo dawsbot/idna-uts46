@@ -7,6 +7,10 @@ async function downloadUnicode(version) {
   uribase = 'http://www.unicode.org/Public/';
   idna_tables = uribase + 'idna/' + version;
   console.log('... ' + idna_tables + '/IdnaTestV2.txt');
+  console.log('... ' + idna_tables + '/IdnaMappingTable.txt');
+  console.log(
+    '... ' + uribase + version + '/ucd/extracted/DerivedGeneralCategory.txt\n',
+  );
 
   const [infd, dgc] = await Promise.all([
     axios(idna_tables + '/IdnaMappingTable.txt').then((res) => res.data),
@@ -32,6 +36,17 @@ async function main() {
 
 main();
 
+function uniChar(i) {
+  try {
+    //     const char = String.fromCharCode(i);
+    const char = String.fromCodePoint(i);
+    console.log({ i, char });
+    return char;
+  } catch (err) {
+    console.warn({ i, err });
+  }
+}
+
 function parseUnicodeDataFile(fd) {
   /* Parse each line to [start, end, fields] for the given Unicode data
 file. These files are of the same basic format: a semicolon-delimited set
@@ -42,8 +57,8 @@ inclusive.
   return (
     fd
       .split('\n')
-      // remove comment lines
-      .filter((line) => !line.startsWith('#'))
+      // remove all comments
+      .map((line) => line.replace(/#.*/, ''))
       // remove blank lines
       .filter((line) => line !== '')
       .map((line) => {
@@ -54,7 +69,11 @@ inclusive.
         if (!end) {
           end = start;
         }
-        return { start, end, parts: parts.slice(1) };
+        return {
+          start,
+          end,
+          parts: parts.slice(1),
+        };
       })
   );
 }
@@ -62,16 +81,15 @@ inclusive.
 class MappedValue {
   constructor(parts) {
     this.flags = 0;
-    this.rule = parts[0];
+    this.rule = parts[0].split(' ')[0];
 
     // If there are two parts, the second part is the mapping in question.
     if (parts.length > 1 && parts[1]) {
       this.chars = parts[1]
-        .split(' ')[0]
-        .split('')
+        .split(' ')
         .map((char) => {
-          console.log({ char });
-          return parseInt(char, 16);
+          const parsed = parseInt(char, 16);
+          return uniChar(parsed);
         })
         .join('');
     } else {
@@ -90,13 +108,12 @@ class MappedValue {
 function buildUnicodeMap(idnaMapTable, derivedGeneralCategory) {
   console.log('Build Unicode Map');
   unicharMap = Array(NUM_UCHAR).fill(0);
-  vals = [];
+  let vals = [];
   console.log('... parse unicode data file (IdnaMappingTable.txt)');
   let toWrite = '';
   parseUnicodeDataFile(idnaMapTable).forEach(({ start, end, parts }) => {
-    const value = new MappedValue(parts);
-    // console.log({ start, end, parts });
     for (let ch = start; ch <= end; ch++) {
+      const value = new MappedValue(parts);
       vals.push(value);
       unicharMap[ch] = value;
     }
@@ -106,13 +123,27 @@ function buildUnicodeMap(idnaMapTable, derivedGeneralCategory) {
   console.log('... parse unicode data file (DerivedGeneralCategory.txt)');
   parseUnicodeDataFile(derivedGeneralCategory).forEach(
     ({ start, end, parts }) => {
-      if (['Mc', 'Mn', 'Me'].includes(parts[0])) {
+      if (
+        ['Mc', 'Mn', 'Me'].some((substring) => parts[0].includes(substring))
+      ) {
         for (let ch = start; ch <= end; ch++) {
-          // bitwise OR
-          unicharMap[ch].flags = unicharMap[ch].flags | 2;
+          //   console.log(ch);
+          unicharMap[ch].flags |= 2;
         }
       }
     },
   );
-  console.log({ unicharMap });
+
+  console.log('... build up internal unicharMap');
+  // Build up the string to use to map the output
+  function sortByLength(a, b) {
+    return a.chars.length - b.chars.length;
+  }
+  console.log(vals[200].chars);
+  console.log(vals[200].flags);
+  console.log(vals[200].rule);
+  //   vals = vals.sort(sortByLength).reverse();
+  //   console.log(vals[0].chars);
+  //   console.log(vals[0].flags);
+  //   console.log(vals[0].rule);
 }
