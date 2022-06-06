@@ -40,7 +40,7 @@ function uniChar(i) {
   try {
     //     const char = String.fromCharCode(i);
     const char = String.fromCodePoint(i);
-    console.log({ i, char });
+    //     console.log({ i, char });
     return char;
   } catch (err) {
     console.warn({ i, err });
@@ -127,7 +127,6 @@ function buildUnicodeMap(idnaMapTable, derivedGeneralCategory) {
         ['Mc', 'Mn', 'Me'].some((substring) => parts[0].includes(substring))
       ) {
         for (let ch = start; ch <= end; ch++) {
-          //   console.log(ch);
           unicharMap[ch].flags |= 2;
         }
       }
@@ -142,8 +141,8 @@ function buildUnicodeMap(idnaMapTable, derivedGeneralCategory) {
   console.log(vals[200].chars);
   console.log(vals[200].flags);
   console.log(vals[200].rule);
-  //   vals = vals.sort(sortByLength).reverse();
-  //   console.log(vals[0].chars);
-  //   console.log(vals[0].flags);
-  //   console.log(vals[0].rule);
+  vals = vals.sort(sortByLength).reverse();
+  console.log(vals[0].chars);
+  console.log(vals[0].flags);
+  console.log(vals[0].rule);
 }
