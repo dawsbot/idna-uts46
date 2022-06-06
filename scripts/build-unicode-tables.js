@@ -47,17 +47,10 @@ inclusive.
       // remove blank lines
       .filter((line) => line !== '')
       .map((line) => {
-        //     line = line.replace(/^#/, '').trim();
-        //     if (!line) return;
         const parts = line.split(';').map((p) => p.trim());
 
+        // convert hex to number
         let [start, end] = parts[0].split('..').map((num) => parseInt(num, 16));
-        //   stend = [int(x, 16) for x in parts[0].split("..")]
-        //       if (stend.length === 1) {
-        //         const start = end = stend[0];
-        //       } else {
-        //       start, (end = stend);
-        //       }
         if (!end) {
           end = start;
         }
@@ -66,17 +59,60 @@ inclusive.
   );
 }
 
+class MappedValue {
+  constructor(parts) {
+    this.flags = 0;
+    this.rule = parts[0];
+
+    // If there are two parts, the second part is the mapping in question.
+    if (parts.length > 1 && parts[1]) {
+      this.chars = parts[1]
+        .split(' ')[0]
+        .split('')
+        .map((char) => {
+          console.log({ char });
+          return parseInt(char, 16);
+        })
+        .join('');
+    } else {
+      this.chars = '';
+    }
+
+    /* In the case of disallowed_STD3_*, we process the real rule as the
+     text following the last _, and set a flag noting to note the
+     difference. */
+    if (this.rule.startsWith('disallowed_STD3')) {
+      this.flags |= 1;
+      this.rule = this.rule.split('_').pop();
+    }
+  }
+}
 function buildUnicodeMap(idnaMapTable, derivedGeneralCategory) {
   console.log('Build Unicode Map');
-  unicharMap = [0] * NUM_UCHAR;
+  unicharMap = Array(NUM_UCHAR).fill(0);
   vals = [];
   console.log('... parse unicode data file (IdnaMappingTable.txt)');
   let toWrite = '';
   parseUnicodeDataFile(idnaMapTable).forEach(({ start, end, parts }) => {
-    console.log({ start, end, parts });
+    const value = new MappedValue(parts);
+    // console.log({ start, end, parts });
+    for (let ch = start; ch <= end; ch++) {
+      vals.push(value);
+      unicharMap[ch] = value;
+    }
   });
-  // for ch in range(start, end + 1):
-  // 	value = MappedValue(parts)
-  // 	vals.append(value)
-  // 	unicharMap[ch] = value
+
+  // Note which characters have the combining mark property.
+  console.log('... parse unicode data file (DerivedGeneralCategory.txt)');
+  parseUnicodeDataFile(derivedGeneralCategory).forEach(
+    ({ start, end, parts }) => {
+      if (['Mc', 'Mn', 'Me'].includes(parts[0])) {
+        for (let ch = start; ch <= end; ch++) {
+          // bitwise OR
+          unicharMap[ch].flags = unicharMap[ch].flags | 2;
+        }
+      }
+    },
+  );
+  console.log({ unicharMap });
 }
