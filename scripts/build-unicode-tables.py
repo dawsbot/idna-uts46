@@ -157,8 +157,8 @@ def build_unicode_map(idnaMapTable, out, derivedGeneralCategory):
 
     print("... build up internal unicharMap")
     # Build up the string to use to map the output
-    vals.sort(key=cmp_to_key(lambda x, y: cmp(
-        len(x.chars), len(y.chars))), reverse=True)
+    # vals.sort(key=cmp_to_key(lambda x, y: cmp(
+    #     len(x.chars), len(y.chars))), reverse=True)
     mappedStr = reduce(lambda s, v: v.build_map_string(s), vals, "")
 
     # Convert this to integers
