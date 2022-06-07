@@ -349,7 +349,7 @@ if (typeof define === 'function' && define.amd) {
 
   return {
     mapStr: mappingStr,
-    mapChar: mapChar
+    mapChar: mapChar,
   };
 }));`;
   fs.writeFileSync(IDNA_MAP_OUTPUT_PATH, toWrite);
