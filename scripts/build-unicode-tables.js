@@ -46,6 +46,11 @@ function uniChar(i) {
     console.warn({ i, err });
   }
 }
+function assert(condition, message) {
+  if (!condition) {
+    throw new Error(message || 'Assertion failed');
+  }
+}
 
 function parseUnicodeDataFile(fd) {
   /* Parse each line to [start, end, fields] for the given Unicode data
@@ -78,6 +83,16 @@ inclusive.
   );
 }
 
+function utf16len(str) {
+  let toReturn = str.split('').reduce((prev, curr) => {
+    const next = curr.charCodeAt(0) > 0xffff ? 2 : 1;
+    return prev + next;
+  }, 0);
+
+  //   console.log({ str, toReturn });
+  return toReturn;
+}
+
 class MappedValue {
   constructor(parts) {
     this.flags = 0;
@@ -104,7 +119,100 @@ class MappedValue {
       this.rule = this.rule.split('_').pop();
     }
   }
+  buildMapString(str) {
+    //     console.log({ str });
+    this.index = 0;
+    if (this.chars) {
+      this.index = str.indexOf(this.chars);
+      if (this.index < 0) {
+        this.index = utf16len(str);
+        str = str + this.chars;
+      } else {
+        this.index = utf16len(str.slice(0, this.index));
+      }
+    }
+    return str;
+  }
+  buildInt() {
+    let status;
+    switch (this.rule) {
+      case 'disallowed':
+        status = 0;
+        break;
+      case 'ignored':
+      case 'mapped':
+        status = 1; // We're mapping to a string of length 0
+        break;
+      case 'deviation':
+        status = 2;
+        break;
+      case 'valid':
+        status = 3;
+        break;
+      default:
+        throw new Error('Unknown rule ' + this.rule);
+    }
+
+    // Sanity check all the bits
+    assert(this.flags < 1 << 2);
+    assert(this.index < 1 << 16);
+    const numchars = utf16len(this.chars);
+    assert(numchars < 1 << 5);
+
+    return (this.flags << 23) | (status << 21) | (this.index << 5) | numchars;
+  }
 }
+
+function sortByLength(a, b) {
+  return b.chars.length - a.chars.length;
+}
+
+// The next two functions are helpers to find the block size that minimizes the
+// total memory use. Notice that we're being clever in finding memory use by
+// noting when we can use Uint8Array versus Uint32Array.
+function findBlockSizes(unicharMap) {
+  let toReturn = [];
+  for (let lgBlockSize = 1; lgBlockSize < 15; lgBlockSize++) {
+    blockSize = 1 << lgBlockSize;
+    const { memUsage, blocks } = computeBlockSize(unicharMap, blockSize);
+    toReturn.push({ memUsage, lgBlockSize, blocks });
+  }
+  return toReturn;
+}
+
+function arrayEquals(a, b) {
+  return (
+    Array.isArray(a) &&
+    Array.isArray(b) &&
+    a.length === b.length &&
+    a.every((val, index) => val === b[index])
+  );
+}
+
+// function computeBlockSize
+function computeBlockSize(unicharMap, blockSize) {
+  let blocks = [];
+  //   console.log(`unicharMap len: ${unicharMap.length}`);
+  //   console.log(`blockSize: ${blockSize}`);
+  for (let i = 0; i < unicharMap.length; i = i + blockSize) {
+    block = unicharMap.slice(i, i + blockSize);
+    // if array is not in blocks, add it
+    if (blocks.some((b) => arrayEquals(block, b))) {
+      blocks.push(block);
+    }
+  }
+  num = blocks.length;
+  if (num < 256) {
+    memUsage = Math.floor(unicharMap.length / blockSize);
+  } else if (num < 0x10000) {
+    memUsage = Math.floor((2 * unicharMap.length) / blockSize);
+  } else {
+    throw new Error(`Way too many blocks: ${num}`);
+  }
+  memUsage += num * blockSize * 4;
+  return { memUsage, blocks };
+}
+
 function buildUnicodeMap(idnaMapTable, derivedGeneralCategory) {
   console.log('Build Unicode Map');
   unicharMap = Array(NUM_UCHAR).fill(0);
@@ -135,14 +243,39 @@ function buildUnicodeMap(idnaMapTable, derivedGeneralCategory) {
 
   console.log('... build up internal unicharMap');
   // Build up the string to use to map the output
-  function sortByLength(a, b) {
-    return a.chars.length - b.chars.length;
+  let mappedStr = '';
+  // This is where results currently differ from python.
+  // I believe the issue is with sorting order
+  vals = vals.sort(sortByLength);
+  vals.forEach((val) => {
+    mappedStr = val.buildMapString(mappedStr);
+  }, '');
+  //   console.log(vals[2].chars);
+  //   console.log(vals[2].flags);
+  //   console.log(vals[2].rule);
+  //   console.log(mappedStr);
+  // Convert this to integers
+  unicharMap = unicharMap.map((val) => val.buildInt());
+
+  // We're going to do a funky special case here. Since planes 3-17 are
+  // basically unused, we're going to divert these from the standard two-phase
+  // table lookup and use hardcoded JS for this code. Ensure that the values
+  // are what we would write in the code.
+  // (The special case here is that the variation selections, in plane 14, are
+  // set to ignored, not disallowed).
+  const specialCase = unicharMap[0xe0100];
+  for (let ch = 0x3134b; ch < unicharMap.length; ch++) {
+    assert(
+      unicharMap[ch] == 0 ||
+        (unicharMap[ch] == specialCase && 0xe0100 <= ch && ch <= 0xe01ef),
+    );
   }
-  console.log(vals[200].chars);
-  console.log(vals[200].flags);
-  console.log(vals[200].rule);
-  vals = vals.sort(sortByLength).reverse();
-  console.log(vals[0].chars);
-  console.log(vals[0].flags);
-  console.log(vals[0].rule);
+
+  console.log('... generate source file (idna-map.js)');
+  const blockSizes = findBlockSizes(unicharMap.slice(0, 0x3134b));
+
+  const { memUsage, lgBlockSize, blocks } = blockSizes.sort(
+    (a, b) => a.memUsage - b.memUsage,
+  );
+  console.log({ memUsage, lgBlockSize });
 }
