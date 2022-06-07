@@ -45,6 +45,7 @@
   },
   "unicodeVersion": "14.0.0",
   "scripts": {
+    "prettier": "prettier -u --write \"**/*\"",
     "test": "npm run test-COVERAGE --silent",
     "test-MOCHA": "./node_modules/.bin/_mocha $(find ./test -type f -name '*.spec.js')",
     "test-COVERAGE": "cross-env NODE_ENV=development nyc npm run test-MOCHA --silent",
@@ -52,7 +53,7 @@
     "lint-python": "./scripts/pep8fix.sh",
     "prepare": "husky install",
     "build": "gulp build",
-    "build:unicode-tables": "node ./scripts/build-unicode-tables 14.0.0 && python3 ./scripts/build-unicode-tables.py 14.0.0"
+    "build:unicode-tables": "esr scripts/build-unicode-tables.ts 14.0.0 "
   },
   "dependencies": {
     "punycode": "^2.1.1"
@@ -60,8 +61,10 @@
   "devDependencies": {
     "@hexonet/semantic-release-github-npm-config": "^2.0.4",
     "@semantic-release/exec": "^6.0.2",
+    "@types/axios": "^0.14.0",
     "axios": "^0.27.2",
     "cross-env": "^7.0.3",
+    "esbuild-runner": "^2.2.1",
     "fancy-log": "^2.0.0",
     "gulp": "^4.0.2",
     "gulp-esbuild": "^0.10.3",
