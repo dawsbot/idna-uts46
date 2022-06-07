@@ -297,9 +297,10 @@ if (typeof define === 'function' && define.amd) {
 `;
 
   toWrite += 'var blocks = [\n';
-  // blocks.forEach(block => {
-  //     toWrite += "  new Uint32Array([%s]),\n" % ",".join(map(str, block)))
-  //   })
+  blocks.forEach((block) => {
+    toWrite += `  new Uint32Array([${block}]),\n`;
+    //  % ",".join(map(str, block)))
+  });
   toWrite += '];\n';
 
   toWrite += '}));';
