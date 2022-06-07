@@ -1,6 +1,7 @@
 const axios = require('axios');
 const fs = require('fs');
 
+const IDNA_MAP_OUTPUT_PATH = 'idna-map.js';
 const NUM_UCHAR = 0x10ffff + 1;
 async function downloadUnicode(version) {
   console.log('Resource Files from www.unicode.org ...');
@@ -197,7 +198,7 @@ function computeBlockSize(unicharMap, blockSize) {
   for (let i = 0; i < unicharMap.length; i = i + blockSize) {
     block = unicharMap.slice(i, i + blockSize);
     // if array is not in blocks, add it
-    if (blocks.some((b) => arrayEquals(block, b))) {
+    if (!blocks.some((b) => arrayEquals(block, b))) {
       blocks.push(block);
     }
   }
@@ -218,7 +219,6 @@ function buildUnicodeMap(idnaMapTable, derivedGeneralCategory) {
   unicharMap = Array(NUM_UCHAR).fill(0);
   let vals = [];
   console.log('... parse unicode data file (IdnaMappingTable.txt)');
-  let toWrite = '';
   parseUnicodeDataFile(idnaMapTable).forEach(({ start, end, parts }) => {
     for (let ch = start; ch <= end; ch++) {
       const value = new MappedValue(parts);
@@ -274,8 +274,36 @@ function buildUnicodeMap(idnaMapTable, derivedGeneralCategory) {
   console.log('... generate source file (idna-map.js)');
   const blockSizes = findBlockSizes(unicharMap.slice(0, 0x3134b));
 
+  // console.log(blockSizes);
   const { memUsage, lgBlockSize, blocks } = blockSizes.sort(
     (a, b) => a.memUsage - b.memUsage,
-  );
-  console.log({ memUsage, lgBlockSize });
+  )[0];
+  const blockSize = 1 << lgBlockSize;
+
+  let toWrite = '';
+  toWrite += '/* This file is generated from the Unicode IDNA table, using\n';
+  toWrite += '   the build-unicode-tables.py script. Please edit that\n';
+  toWrite += '   script instead of this file. */\n\n';
+  toWrite += `/* istanbul ignore next */
+(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+  define([], function () { return factory(); });
+} else if (typeof exports === 'object') {
+  module.exports = factory();
+} else {
+  root.uts46_map = factory();
+}
+}(this, function () {
+`;
+
+  toWrite += 'var blocks = [\n';
+  // blocks.forEach(block => {
+  //     toWrite += "  new Uint32Array([%s]),\n" % ",".join(map(str, block)))
+  //   })
+  toWrite += '];\n';
+
+  toWrite += '}));';
+  fs.writeFileSync(IDNA_MAP_OUTPUT_PATH, toWrite);
+
+  // console.log({ memUsage, lgBlockSize });
 }
