@@ -190,15 +190,25 @@ function arrayEquals(a, b) {
   );
 }
 
+const arrayInsert = (arr, index, newItem) => [
+  // part of the array before the specified index
+  ...arr.slice(0, index),
+  // inserted item
+  newItem,
+  // part of the array after the specified index
+  ...arr.slice(index),
+];
+
 // function computeBlockSize
 function computeBlockSize(unicharMap, blockSize) {
   let blocks = [];
-  //   console.log(`unicharMap len: ${unicharMap.length}`);
-  //   console.log(`blockSize: ${blockSize}`);
   for (let i = 0; i < unicharMap.length; i = i + blockSize) {
     block = unicharMap.slice(i, i + blockSize);
     // if array is not in blocks, add it
     if (!blocks.some((b) => arrayEquals(block, b))) {
+      // const index = blocks.findIndex((elem) => elem[0] > block[0]) || 0;
+      // add to array but do-so in the same way that python would (ordered by numeric less than first)
+      // blocks = arrayInsert(blocks, index, block);
       blocks.push(block);
     }
   }
@@ -272,12 +282,12 @@ function buildUnicodeMap(idnaMapTable, derivedGeneralCategory) {
   }
 
   console.log('... generate source file (idna-map.js)');
-  const blockSizes = findBlockSizes(unicharMap.slice(0, 0x3134b));
+  let blockSizes = findBlockSizes(unicharMap.slice(0, 0x3134b));
 
   // console.log(blockSizes);
-  const { memUsage, lgBlockSize, blocks } = blockSizes.sort(
-    (a, b) => a.memUsage - b.memUsage,
-  )[0];
+  blockSizes = blockSizes.sort((a, b) => a.memUsage - b.memUsage);
+
+  const { memUsage, lgBlockSize, blocks } = blockSizes[0];
   const blockSize = 1 << lgBlockSize;
 
   let toWrite = '';
@@ -298,13 +308,49 @@ if (typeof define === 'function' && define.amd) {
 
   toWrite += 'var blocks = [\n';
   blocks.forEach((block) => {
-    toWrite += `  new Uint32Array([${block}]),\n`;
-    //  % ",".join(map(str, block)))
+    toWrite += `    new Uint32Array([${block}]),\n`;
   });
-  toWrite += '];\n';
+  toWrite += '  ];\n';
 
-  toWrite += '}));';
-  fs.writeFileSync(IDNA_MAP_OUTPUT_PATH, toWrite);
+  // Now emit the block index map
+  let blockIdxes = [];
+  for (let i = 0; i < 0x30000; i = i + blockSize) {
+    const index = blocks.findIndex((b) => {
+      const toReturn = arrayEquals(b, unicharMap.slice(i, i + blockSize));
+      return toReturn;
+    });
+    blockIdxes.push(index);
+  }
+  //   ",".join(
+  //     str(blocks.index(tuple(unicharMap[i: i + block_size])))
+  //     for i in range(0, 0x30000, block_size)
+  // )
+  // )
+  toWrite += `   var blockIdxes = new Uint${
+    blocks.length < 256 ? 8 : 16
+  }Array([${blockIdxes}]);\n`;
+  // out.write("]);\n")
 
   // console.log({ memUsage, lgBlockSize });
+  toWrite += `  var mappingStr = '${mappedStr}';\n`;
+
+  // Finish off with the function to actually look everything up
+  const codepoint = unicharMap[0xe0100];
+  const mask = (1 << lgBlockSize) - 1;
+  toWrite += `  function mapChar(codePoint) {
+    if (codePoint >= 0x30000) {
+      // High planes are special cased.
+      if (codePoint >= 0xE0100 && codePoint <= 0xE01EF)
+        return ${codepoint};
+      return 0;
+    }
+    return blocks[blockIdxes[codePoint >> ${lgBlockSize}]][codePoint & ${mask}];
+  }
+
+  return {
+    mapStr: mappingStr,
+    mapChar: mapChar
+  };
+}));`;
+  fs.writeFileSync(IDNA_MAP_OUTPUT_PATH, toWrite);
 }
