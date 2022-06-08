@@ -107,7 +107,6 @@ class MappedValue {
 
     // If there are two parts, the second part is the mapping in question.
     if (parts.length > 1 && parts[1]) {
-      console.log(parts);
       this.chars = parts[1]
         .split(' ')
         .map((char) => {

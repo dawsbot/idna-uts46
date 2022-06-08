@@ -78,6 +78,7 @@
     "prettier": "^2.6.2",
     "prettier-config-xo": "^2.0.0",
     "semantic-release": "^18.0.1",
+    "ts-node": "^10.8.1",
     "xo": "^0.48.0"
   },
   "lint-staged": {

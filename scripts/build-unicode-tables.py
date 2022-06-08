@@ -264,10 +264,11 @@ def find_block_sizes(unicharMap):
 
 
 def compute_block_size(unicharMap, block_size):
-    blocks = set()
+    blocks = []
     for i in range(0, len(unicharMap), block_size):
         block = tuple(unicharMap[i: i + block_size])
-        blocks.add(block)
+        if block not in blocks:
+            blocks.append(block)
     num = len(blocks)
     if num < 256:
         mem = old_div(len(unicharMap), block_size)
