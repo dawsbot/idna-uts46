@@ -107,6 +107,7 @@ class MappedValue {
 
     // If there are two parts, the second part is the mapping in question.
     if (parts.length > 1 && parts[1]) {
+      console.log(parts);
       this.chars = parts[1]
         .split(' ')
         .map((char) => {
@@ -196,15 +197,6 @@ function arrayEquals(a, b) {
   );
 }
 
-const arrayInsert = (arr, index, newItem) => [
-  // part of the array before the specified index
-  ...arr.slice(0, index),
-  // inserted item
-  newItem,
-  // part of the array after the specified index
-  ...arr.slice(index),
-];
-
 // function computeBlockSize
 function computeBlockSize(unicharMap, blockSize) {
   let blocks = [];
@@ -230,7 +222,21 @@ function computeBlockSize(unicharMap, blockSize) {
   memUsage += num * blockSize * 4;
   return { memUsage, blocks };
 }
-
+function escapeString(str: string) {
+  const entityMap = {
+    '&': '&',
+    '<': '<',
+    '>': '>',
+    '"': '"',
+    "'": "'",
+    '/': '/',
+    '`': '`',
+    '=': '=',
+  };
+  return str.replace(/[&<>"'`=\/]/g, function (s) {
+    return `\\${entityMap[s]}`;
+  });
+}
 function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
   console.log('Build Unicode Map');
   // let unicharMap: number[] = Array(NUM_UCHAR).fill(0);
@@ -263,16 +269,12 @@ function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
   console.log('... build up internal unicharMap');
   // Build up the string to use to map the output
   let mappedStr = '';
-  // This is where results currently differ from python.
-  // I believe the issue is with sorting order
-  vals = vals.sort(sortByLength);
+  // Python script was sorting here, but when sorting was removed, all tests still pass
+  // vals = vals.sort(sortByLength);
   vals.forEach((val) => {
     mappedStr = val.buildMapString(mappedStr);
   }, '');
-  //   console.log(vals[2].chars);
-  //   console.log(vals[2].flags);
-  //   console.log(vals[2].rule);
-  //   console.log(mappedStr);
+
   // Convert this to integers
   unicharMap = unicharMap.map((val) => val.buildInt());
 
@@ -293,7 +295,6 @@ function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
   console.log('... generate source file (idna-map.js)');
   let blockSizes = findBlockSizes(unicharMap.slice(0, 0x3134b));
 
-  // console.log(blockSizes);
   blockSizes = blockSizes.sort((a, b) => a.memUsage - b.memUsage);
 
   const { memUsage, lgBlockSize, blocks } = blockSizes[0];
@@ -305,17 +306,19 @@ function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
   toWrite += '   script instead of this file. */\n\n';
   toWrite += `/* istanbul ignore next */
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-  define([], function () { return factory(); });
-} else if (typeof exports === 'object') {
-  module.exports = factory();
-} else {
-  root.uts46_map = factory();
-}
+  if (typeof define === 'function' && define.amd) {
+    define([], function () {
+      return factory();
+    });
+  } else if (typeof exports === 'object') {
+    module.exports = factory();
+  } else {
+    root.uts46_map = factory();
+  }
 }(this, function () {
 `;
 
-  toWrite += 'var blocks = [\n';
+  toWrite += ' var blocks = [\n';
   blocks.forEach((block) => {
     toWrite += `    new Uint32Array([${block}]),\n`;
   });
@@ -330,18 +333,11 @@ if (typeof define === 'function' && define.amd) {
     });
     blockIdxes.push(index);
   }
-  //   ",".join(
-  //     str(blocks.index(tuple(unicharMap[i: i + block_size])))
-  //     for i in range(0, 0x30000, block_size)
-  // )
-  // )
   toWrite += `   var blockIdxes = new Uint${
     blocks.length < 256 ? 8 : 16
   }Array([${blockIdxes}]);\n`;
-  // out.write("]);\n")
 
-  // console.log({ memUsage, lgBlockSize });
-  toWrite += `  var mappingStr = '${mappedStr}';\n`;
+  toWrite += `  var mappingStr = '${escapeString(mappedStr)}';\n`;
 
   // Finish off with the function to actually look everything up
   const codepoint = unicharMap[0xe0100];
@@ -349,8 +345,7 @@ if (typeof define === 'function' && define.amd) {
   toWrite += `  function mapChar(codePoint) {
     if (codePoint >= 0x30000) {
       // High planes are special cased.
-      if (codePoint >= 0xE0100 && codePoint <= 0xE01EF)
-        return ${codepoint};
+      if (codePoint >= 0xE0100 && codePoint <= 0xE01EF) return ${codepoint};
       return 0;
     }
     return blocks[blockIdxes[codePoint >> ${lgBlockSize}]][codePoint & ${mask}];
@@ -360,6 +355,7 @@ if (typeof define === 'function' && define.amd) {
     mapStr: mappingStr,
     mapChar: mapChar,
   };
-}));`;
+}));
+`;
   fs.writeFileSync(IDNA_MAP_OUTPUT_PATH, toWrite);
 }
