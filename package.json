@@ -7,7 +7,7 @@
   "typings": "dist/index.d.ts",
   "license": "MIT",
   "engines": {
-    "node": ">=12"
+    "node": ">=8"
   },
   "homepage": "https://github.com/hexonet/idna-uts46",
   "repository": "github:hexonet/idna-uts46",
@@ -40,35 +40,31 @@
     "prettier": "prettier -u --write \"**/*\"",
     "build": "rollup -c",
     "pretest": "npm run build",
-    "test": "npm run test-COVERAGE --silent",
-    "test-MOCHA": "./node_modules/.bin/_mocha $(find ./test -type f -name '*.spec.js')",
-    "test-COVERAGE": "cross-env NODE_ENV=development nyc npm run test-MOCHA --silent",
-    "lint": "xo",
+    "test": "mocha",
+    "test:coverage": "cross-env NODE_ENV=development nyc npm run test --silent",
+    "lint": "eslint src",
     "prepare": "husky install",
-    "build:unicode-tables": "esr scripts/build-unicode-tables.ts 14.0.0 "
+    "build:unicode-tables": "esr scripts/build-unicode-tables.ts 14.0.0"
   },
   "dependencies": {
     "punycode": "^2.1.1"
   },
   "devDependencies": {
-    "@hexonet/semantic-release-github-npm-config": "^2.0.4",
     "@rollup/plugin-node-resolve": "^13.3.0",
-    "@semantic-release/exec": "^6.0.2",
     "@types/axios": "^0.14.0",
     "axios": "^0.27.2",
     "cross-env": "^7.0.3",
     "esbuild-runner": "^2.2.1",
+    "eslint": "^7.32.0",
+    "eslint-plugin-mocha": "^10.0.5",
     "fancy-log": "^2.0.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.0",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
     "prettier": "^2.6.2",
-    "prettier-config-xo": "^2.0.0",
     "rollup": "^2.75.6",
-    "semantic-release": "^18.0.1",
-    "ts-node": "^10.8.1",
-    "xo": "^0.48.0"
+    "ts-node": "^10.8.1"
   },
   "lint-staged": {
     "*": "prettier -u --write"

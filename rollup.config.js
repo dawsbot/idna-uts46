@@ -13,5 +13,8 @@ export default {
       name: 'idnaUts46',
     },
   ],
-  plugins: [nodeResolve({ preferBuiltins: false })],
+  plugins: [
+    // needed to resolve punycode from import not node's builtin
+    nodeResolve({ preferBuiltins: false }),
+  ],
 };
