@@ -7,22 +7,35 @@ async function downloadUnicode(version: string) {
   console.log('Resource Files from www.unicode.org ...');
   const uriBase = 'http://www.unicode.org/Public/';
   const idnaTables = uriBase + 'idna/' + version;
-  console.log('... ' + idnaTables + '/IdnaTestV2.txt');
-  console.log('... ' + idnaTables + '/IdnaMappingTable.txt');
-  console.log(
-    '... ' + uriBase + version + '/ucd/extracted/DerivedGeneralCategory.txt\n',
-  );
+  const urls = {
+    idnaTestV2: idnaTables + '/IdnaTestV2.txt',
+    idnaMappingTable: idnaTables + '/IdnaMappingTable.txt',
+    derivedGeneralCategory:
+      uriBase + version + '/ucd/extracted/DerivedGeneralCategory.txt',
+  };
+  console.log('... ' + urls.idnaTestV2);
+  console.log('... ' + urls.idnaMappingTable);
+  console.log('... ' + urls.derivedGeneralCategory + '\n');
 
   const [infd, dgc] = await Promise.all([
-    axios(idnaTables + '/IdnaMappingTable.txt').then(
-      (res) => res.data as string,
-    ),
-    axios(uriBase + version + '/ucd/extracted/DerivedGeneralCategory.txt').then(
-      (res) => res.data as string,
-    ),
-    axios(idnaTables + '/IdnaTestV2.txt').then((res) =>
-      fs.writeFileSync('test/IdnaTest.txt', res.data),
-    ),
+    axios(urls.idnaMappingTable)
+      .then((res) => res.data as string)
+      .catch((err) => {
+        console.error(err);
+        throw err;
+      }),
+    axios(urls.derivedGeneralCategory)
+      .then((res) => res.data as string)
+      .catch((err) => {
+        console.error(err);
+        throw err;
+      }),
+    axios(urls.idnaTestV2)
+      .then((res) => fs.writeFileSync('test/IdnaTest.txt', res.data))
+      .catch((err) => {
+        console.error(err);
+        throw err;
+      }),
   ]);
   await buildUnicodeMap(infd, dgc);
 }
@@ -152,10 +165,10 @@ class MappedValue {
     }
 
     // Sanity check all the bits
-    assert(this.flags < 1 << 2);
-    assert(this.index < 1 << 16);
+    assert(this.flags < 1 << 2, 'flags failed assertion: ' + this.flags);
+    assert(this.index < 1 << 16, 'index failed assertion: ' + this.index);
     const numchars = utf16len(this.chars);
-    assert(numchars < 1 << 5);
+    assert(numchars < 1 << 5, 'numchars failed assertion: ' + numchars);
 
     return (this.flags << 23) | (status << 21) | (this.index << 5) | numchars;
   }
@@ -280,6 +293,7 @@ function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
     assert(
       unicharMap[ch] === 0 ||
         (unicharMap[ch] === specialCase && 0xe0100 <= ch && ch <= 0xe01ef),
+      'Special case in unicharMap failed: ' + ch,
     );
   }
 
