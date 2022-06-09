@@ -57,7 +57,7 @@
     "punycode": "^2.1.1"
   },
   "devDependencies": {
-    "@hexonet/semantic-release-github-npm-config": "^2.0.4",
+    "@hexonet/semantic-release-github-npm-config": "^3.0.2",
     "@semantic-release/exec": "^6.0.2",
     "cross-env": "^7.0.3",
     "fancy-log": "^2.0.0",
