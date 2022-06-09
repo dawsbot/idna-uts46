@@ -40,14 +40,8 @@ async function main() {
 main();
 
 function uniChar(i: number) {
-  try {
-    //     const char = String.fromCharCode(i);
-    const char = String.fromCodePoint(i);
-    //     console.log({ i, char });
-    return char;
-  } catch (err) {
-    console.warn({ i, err });
-  }
+  const char = String.fromCodePoint(i);
+  return char;
 }
 function assert(condition: boolean, message = 'Assertion failed') {
   if (!condition) {
@@ -91,8 +85,6 @@ function utf16len(str: string) {
     const next = curr.charCodeAt(0) > 0xffff ? 2 : 1;
     return prev + next;
   }, 0);
-
-  //   console.log({ str, toReturn });
   return toReturn;
 }
 
@@ -127,7 +119,6 @@ class MappedValue {
     }
   }
   buildMapString(str) {
-    //     console.log({ str });
     this.index = 0;
     if (this.chars) {
       this.index = str.indexOf(this.chars);
