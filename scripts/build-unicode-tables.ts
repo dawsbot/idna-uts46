@@ -1,8 +1,8 @@
 import axios from 'axios';
-const fs = require('fs');
+import fs from 'fs';
+import path from 'path';
 
-const IDNA_MAP_OUTPUT_PATH = 'idna-map.js';
-const NUM_UCHAR = 0x10ffff + 1;
+const IDNA_MAP_OUTPUT_PATH = path.join(__dirname, '..', 'src', 'idna-map.js');
 async function downloadUnicode(version: string) {
   console.log('Resource Files from www.unicode.org ...');
   const uriBase = 'http://www.unicode.org/Public/';
@@ -174,10 +174,6 @@ class MappedValue {
   }
 }
 
-function sortByLength(a, b) {
-  return b.chars.length - a.chars.length;
-}
-
 // The next two functions are helpers to find the block size that minimizes the
 // total memory use. Notice that we're being clever in finding memory use by
 // noting when we can use Uint8Array versus Uint32Array.
@@ -244,8 +240,6 @@ function escapeString(str: string) {
 }
 function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
   console.log('Build Unicode Map');
-  // let unicharMap: number[] = Array(NUM_UCHAR).fill(0);
-  // let unicharMap: (number | MappedValue)[] = [];
   let unicharMap: any[] = [];
   let vals: MappedValue[] = [];
   console.log('... parse unicode data file (IdnaMappingTable.txt)');

@@ -3,8 +3,8 @@
   "description": "A UTS #46 processing algorithm for IDNA2008 strings",
   "version": "4.0.0",
   "private": false,
-  "main": "uts46.js",
-  "typings": "index.d.ts",
+  "main": "dist/uts46.js",
+  "typings": "dist/index.d.ts",
   "license": "MIT",
   "engines": {
     "node": ">=12"
@@ -52,7 +52,6 @@
     "lint": "xo && npm run lint-python",
     "lint-python": "./scripts/pep8fix.sh",
     "prepare": "husky install",
-    "build": "gulp build",
     "build:unicode-tables": "esr scripts/build-unicode-tables.ts 14.0.0 "
   },
   "dependencies": {
@@ -66,11 +65,6 @@
     "cross-env": "^7.0.3",
     "esbuild-runner": "^2.2.1",
     "fancy-log": "^2.0.0",
-    "gulp": "^4.0.2",
-    "gulp-esbuild": "^0.10.3",
-    "gulp-prettier": "^4.0.0",
-    "gulp-rename": "^2.0.0",
-    "gulp-terser": "^2.1.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.0",
     "mocha": "^10.0.0",
