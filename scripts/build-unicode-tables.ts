@@ -223,16 +223,18 @@ function computeBlockSize(unicharMap, blockSize) {
 }
 function escapeString(str: string) {
   const entityMap = {
+    $: '$',
     '&': '&',
     '<': '<',
     '>': '>',
     '"': '"',
     "'": "'",
     '/': '/',
+    // '\\': '\\',
     '`': '`',
     '=': '=',
   };
-  return str.replace(/[&<>"'`=\/]/g, function (s) {
+  return str.replace(/[$&<>"'`=\/]/g, function (s) {
     return `\\${entityMap[s]}`;
   });
 }
@@ -267,11 +269,10 @@ function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
 
   console.log('... build up internal unicharMap');
   // Build up the string to use to map the output
-  let mappedStr = '';
   // Python script was sorting here, but when sorting was removed, all tests still pass
   // vals = vals.sort(sortByLength);
-  vals.forEach((val) => {
-    mappedStr = val.buildMapString(mappedStr);
+  const mappedStr = vals.reduce((prev, val) => {
+    return val.buildMapString(prev);
   }, '');
 
   // Convert this to integers
@@ -287,7 +288,7 @@ function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
   for (let ch = 0x3134b; ch < unicharMap.length; ch++) {
     assert(
       unicharMap[ch] === 0 ||
-        (unicharMap[ch] == specialCase && 0xe0100 <= ch && ch <= 0xe01ef),
+        (unicharMap[ch] === specialCase && 0xe0100 <= ch && ch <= 0xe01ef),
     );
   }
 
@@ -336,7 +337,7 @@ function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
     blocks.length < 256 ? 8 : 16
   }Array([${blockIdxes}]);\n`;
 
-  toWrite += `  var mappingStr = '${escapeString(mappedStr)}';\n`;
+  toWrite += `  var mappingStr = "${escapeString(mappedStr)}";\n`;
 
   // Finish off with the function to actually look everything up
   const codepoint = unicharMap[0xe0100];

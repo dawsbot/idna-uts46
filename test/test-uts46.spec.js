@@ -555,5 +555,12 @@ suite('unicode.org', function () {
       'xn--mgba3gch31f060k.de',
     );
     /* jshint +W100 */
+
+    // common emojis
+    assert.strict.equal(uts46.toAscii('😂'), 'xn--g28h');
+    assert.strict.equal(uts46.toAscii('🫡'), 'xn--229h');
+
+    assert.strict.equal(uts46.toUnicode('xn--g28h'), '😂');
+    assert.strict.equal(uts46.toUnicode('xn--229h'), '🫡');
   });
 });
