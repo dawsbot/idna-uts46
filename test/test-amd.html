@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <title>IDNA UTS#46 Mocha tests</title>
     <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
-    <script src="../uts46bundle.min.js"></script>
+    <script src="../dist/index.bundle.js"></script>
     <style>
       #convert {
         padding: 50px;
@@ -19,14 +19,14 @@
     <script>
       function start() {
         const eL = document.getElementById('convert');
-        if (!ispapiIdnconverter) {
-          eL.innerHTML =
-            '<h1 class="err">... Failed loading IDN Converter</h1>';
+        if (!idnaUts46) {
+          debugger;
+          alert('... Failed loading IDN Converter');
           return;
         }
         eL.innerHTML = '<h1 class="ok">... IDN Converter loaded</b><h1>';
 
-        const uts46 = ispapiIdnconverter;
+        const uts46 = idnaUts46;
         const data = {
           convert: {
             'öbb.at': 'xn--bb-eka.at',

@@ -299,25 +299,26 @@ function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
   const { memUsage, lgBlockSize, blocks } = blockSizes[0];
   const blockSize = 1 << lgBlockSize;
 
-  let toWrite = '';
-  toWrite += '/* This file is generated from the Unicode IDNA table, using\n';
-  toWrite += '   the build-unicode-tables.py script. Please edit that\n';
-  toWrite += '   script instead of this file. */\n\n';
-  toWrite += `/* istanbul ignore next */
-(function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define([], function () {
-      return factory();
-    });
-  } else if (typeof exports === 'object') {
-    module.exports = factory();
-  } else {
-    root.uts46_map = factory();
-  }
-}(this, function () {
+  let toWrite = `\/\* This file is generated from the Unicode IDNA table, using
+the scripts/build-unicode-tables.ts script. Edit that
+instead of this file. \*\/
 `;
 
-  toWrite += ' var blocks = [\n';
+  //   toWrite += `/* istanbul ignore next */
+  // (function (root, factory) {
+  //   if (typeof define === 'function' && define.amd) {
+  //     define([], function () {
+  //       return factory();
+  //     });
+  //   } else if (typeof exports === 'object') {
+  //     module.exports = factory();
+  //   } else {
+  //     root.uts46_map = factory();
+  //   }
+  // }(this, function () {
+  // `;
+
+  toWrite += ' const blocks = [\n';
   blocks.forEach((block) => {
     toWrite += `    new Uint32Array([${block}]),\n`;
   });
@@ -332,11 +333,11 @@ function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
     });
     blockIdxes.push(index);
   }
-  toWrite += `   var blockIdxes = new Uint${
+  toWrite += `   const blockIdxes = new Uint${
     blocks.length < 256 ? 8 : 16
   }Array([${blockIdxes}]);\n`;
 
-  toWrite += `  var mappingStr = "${escapeString(mappedStr)}";\n`;
+  toWrite += `  const mapStr = "${escapeString(mappedStr)}";\n`;
 
   // Finish off with the function to actually look everything up
   const codepoint = unicharMap[0xe0100];
@@ -350,11 +351,10 @@ function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
     return blocks[blockIdxes[codePoint >> ${lgBlockSize}]][codePoint & ${mask}];
   }
 
-  return {
-    mapStr: mappingStr,
+  module.exports ={
+    mapStr: mapStr,
     mapChar: mapChar,
   };
-}));
 `;
   fs.writeFileSync(IDNA_MAP_OUTPUT_PATH, toWrite);
 }

@@ -12,14 +12,7 @@
   "homepage": "https://github.com/hexonet/idna-uts46",
   "repository": "github:hexonet/idna-uts46",
   "bugs": "https://github.com/hexonet/idna-uts46/issues",
-  "maintainers": [
-    {
-      "name": "Kai Schwarz",
-      "email": "kschwarz@hexonet.net"
-    }
-  ],
   "keywords": [
-    "hexonet",
     "unicode",
     "idn",
     "idna",
@@ -31,8 +24,7 @@
       "text"
     ],
     "exclude": [
-      "**/*.spec.js",
-      "idna-map.js"
+      "test"
     ]
   },
   "xo": {
@@ -46,11 +38,12 @@
   "unicodeVersion": "14.0.0",
   "scripts": {
     "prettier": "prettier -u --write \"**/*\"",
+    "build": "rollup -c",
+    "pretest": "npm run build",
     "test": "npm run test-COVERAGE --silent",
     "test-MOCHA": "./node_modules/.bin/_mocha $(find ./test -type f -name '*.spec.js')",
     "test-COVERAGE": "cross-env NODE_ENV=development nyc npm run test-MOCHA --silent",
-    "lint": "xo && npm run lint-python",
-    "lint-python": "./scripts/pep8fix.sh",
+    "lint": "xo",
     "prepare": "husky install",
     "build:unicode-tables": "esr scripts/build-unicode-tables.ts 14.0.0 "
   },
@@ -59,6 +52,7 @@
   },
   "devDependencies": {
     "@hexonet/semantic-release-github-npm-config": "^2.0.4",
+    "@rollup/plugin-node-resolve": "^13.3.0",
     "@semantic-release/exec": "^6.0.2",
     "@types/axios": "^0.14.0",
     "axios": "^0.27.2",
@@ -71,6 +65,7 @@
     "nyc": "^15.1.0",
     "prettier": "^2.6.2",
     "prettier-config-xo": "^2.0.0",
+    "rollup": "^2.75.6",
     "semantic-release": "^18.0.1",
     "ts-node": "^10.8.1",
     "xo": "^0.48.0"

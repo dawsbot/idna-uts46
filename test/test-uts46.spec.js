@@ -1,7 +1,6 @@
 //"use strict";
-
 const assert = require('assert');
-const uts46 = require('../src/uts46');
+const uts46 = require('../dist/index.cjs');
 
 suite('toASCII', function () {
   test('Convert method tests', function () {
