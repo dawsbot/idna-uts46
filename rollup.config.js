@@ -1,4 +1,5 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import { terser } from 'rollup-plugin-terser';
 
 export default {
   input: 'src/index.js',
@@ -11,6 +12,7 @@ export default {
       file: 'dist/index.bundle.js',
       format: 'iife',
       name: 'idnaUts46',
+      plugins: [terser()],
     },
   ],
   plugins: [
