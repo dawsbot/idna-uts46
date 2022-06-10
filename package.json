@@ -3,11 +3,13 @@
   "description": "A UTS #46 processing algorithm for IDNA2008 strings",
   "version": "4.0.0",
   "private": false,
-  "main": "dist/uts46.js",
+  "module": "dist/index.esm.js",
+  "main": "dist/index.cjs.js",
   "typings": "dist/index.d.ts",
   "license": "MIT",
+  "sideEffects": false,
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   },
   "homepage": "https://github.com/hexonet/idna-uts46",
   "repository": "github:hexonet/idna-uts46",
@@ -27,22 +29,14 @@
       "test"
     ]
   },
-  "xo": {
-    "prettier": true,
-    "globals": [],
-    "ignores": [
-      "!@(vendor|coverage|.nyc_output|.github|node_modules|pkg|build)/**",
-      "!**/*.@(all|min).js"
-    ]
-  },
   "unicodeVersion": "14.0.0",
   "scripts": {
     "prettier": "prettier -u --write \"**/*\"",
-    "build": "rollup -c",
+    "build": "rollup -c && rollup -c rollup-esm.config",
     "pretest": "npm run build",
     "test": "mocha",
     "test:coverage": "cross-env NODE_ENV=development nyc npm run test --silent",
-    "lint": "eslint src",
+    "lint": "eslint .",
     "prepare": "husky install",
     "build:unicode-tables": "esr scripts/build-unicode-tables.ts 14.0.0"
   },
