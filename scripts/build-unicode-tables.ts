@@ -177,8 +177,12 @@ class MappedValue {
 // The next two functions are helpers to find the block size that minimizes the
 // total memory use. Notice that we're being clever in finding memory use by
 // noting when we can use Uint8Array versus Uint32Array.
-function findBlockSizes(unicharMap) {
-  let toReturn = [];
+function findBlockSizes(unicharMap: any[]) {
+  let toReturn: Array<{
+    memUsage: number;
+    lgBlockSize: number;
+    blocks: any[];
+  }> = [];
   for (let lgBlockSize = 1; lgBlockSize < 15; lgBlockSize++) {
     const blockSize = 1 << lgBlockSize;
     const { memUsage, blocks } = computeBlockSize(unicharMap, blockSize);
@@ -197,8 +201,8 @@ function arrayEquals(a, b) {
 }
 
 // function computeBlockSize
-function computeBlockSize(unicharMap, blockSize) {
-  let blocks = [];
+function computeBlockSize(unicharMap: any[], blockSize: number) {
+  let blocks: Array<Array<any>> = [];
   for (let i = 0; i < unicharMap.length; i = i + blockSize) {
     const block = unicharMap.slice(i, i + blockSize);
     // if array is not in blocks, add it
@@ -325,7 +329,7 @@ instead of this file. \*\/
   toWrite += '  ];\n';
 
   // Now emit the block index map
-  let blockIdxes = [];
+  let blockIdxes: number[] = [];
   for (let i = 0; i < 0x30000; i = i + blockSize) {
     const index = blocks.findIndex((b) => {
       const toReturn = arrayEquals(b, unicharMap.slice(i, i + blockSize));
@@ -351,9 +355,9 @@ instead of this file. \*\/
     return blocks[blockIdxes[codePoint >> ${lgBlockSize}]][codePoint & ${mask}];
   }
 
-  module.exports ={
-    mapStr: mapStr,
-    mapChar: mapChar,
+  export {
+    mapStr,
+    mapChar,
   };
 `;
   fs.writeFileSync(IDNA_MAP_OUTPUT_PATH, toWrite);

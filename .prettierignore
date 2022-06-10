@@ -1,4 +1,3 @@
-# Coverage Reporting
 coverage
-
+.nyc_output
 dist
