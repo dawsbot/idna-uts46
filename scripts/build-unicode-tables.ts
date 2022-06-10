@@ -1,6 +1,10 @@
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
+import {
+  stringifyBlocks,
+  stringifyCompressArray,
+} from './stringify-compress-array';
 
 const IDNA_MAP_OUTPUT_PATH = path.join(__dirname, '..', 'src', 'idna-map.js');
 async function downloadUnicode(version: string) {
@@ -62,13 +66,15 @@ function assert(condition: boolean, message = 'Assertion failed') {
   }
 }
 
-function parseUnicodeDataFile(fd: string) {
-  /* Parse each line to [start, end, fields] for the given Unicode data
+/**
+   * Parse each line to [start, end, fields] for the given Unicode data
 file. These files are of the same basic format: a semicolon-delimited set
 of columns, where the first column is either a single element or a range of
 characters. In this case, the range implied by start and end are
 inclusive.
-*/
+   *
+   *  */
+function parseUnicodeDataFile(fd: string) {
   return (
     fd
       .split('\n')
@@ -308,25 +314,7 @@ the scripts/build-unicode-tables.ts script. Edit that
 instead of this file. \*\/
 `;
 
-  //   toWrite += `/* istanbul ignore next */
-  // (function (root, factory) {
-  //   if (typeof define === 'function' && define.amd) {
-  //     define([], function () {
-  //       return factory();
-  //     });
-  //   } else if (typeof exports === 'object') {
-  //     module.exports = factory();
-  //   } else {
-  //     root.uts46_map = factory();
-  //   }
-  // }(this, function () {
-  // `;
-
-  toWrite += ' const blocks = [\n';
-  blocks.forEach((block) => {
-    toWrite += `    new Uint32Array([${block}]),\n`;
-  });
-  toWrite += '  ];\n';
+  toWrite += stringifyBlocks(blocks as number[]);
 
   // Now emit the block index map
   let blockIdxes: number[] = [];
@@ -337,9 +325,10 @@ instead of this file. \*\/
     });
     blockIdxes.push(index);
   }
-  toWrite += `   const blockIdxes = new Uint${
+  const { pre, arr } = stringifyCompressArray(blockIdxes);
+  toWrite += `   ${pre}\nconst blockIdxes = new Uint${
     blocks.length < 256 ? 8 : 16
-  }Array([${blockIdxes}]);\n`;
+  }Array(${arr});\n`;
 
   toWrite += `  const mapStr = "${escapeString(mappedStr)}";\n`;
 
