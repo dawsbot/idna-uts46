@@ -11,9 +11,9 @@
   "engines": {
     "node": ">=10"
   },
-  "homepage": "https://github.com/hexonet/idna-uts46",
-  "repository": "github:hexonet/idna-uts46",
-  "bugs": "https://github.com/hexonet/idna-uts46/issues",
+  "homepage": "https://github.com/dawsbot/idna-uts46",
+  "repository": "github:dawsbot/idna-uts46",
+  "bugs": "https://github.com/dawsbot/idna-uts46/issues",
   "keywords": [
     "unicode",
     "idn",
@@ -58,6 +58,7 @@
     "nyc": "^15.1.0",
     "prettier": "^2.6.2",
     "rollup": "^2.75.6",
+    "rollup-plugin-bundle-size": "^1.0.3",
     "rollup-plugin-terser": "^7.0.2",
     "ts-node": "^10.8.1"
   },

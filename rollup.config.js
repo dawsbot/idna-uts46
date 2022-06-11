@@ -1,5 +1,6 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
+import bundleSize from 'rollup-plugin-bundle-size';
 
 export default {
   input: 'src/index.js',
@@ -17,6 +18,7 @@ export default {
   ],
   plugins: [
     // needed to resolve punycode from import not node's builtin
+    bundleSize(),
     nodeResolve({ preferBuiltins: false }),
   ],
 };
