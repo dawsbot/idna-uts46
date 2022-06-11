@@ -2,6 +2,7 @@ import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import {
+  compressblockIndexes,
   stringifyBlocks,
   stringifyCompressArray,
 } from './stringify-compress-array';
@@ -321,19 +322,19 @@ function f(e,t) {
   toWrite += stringifyBlocks(blocks as Array<Array<number>>);
 
   // Now emit the block index map
-  let blockIdxes: number[] = [];
+  let blockIndexes: number[] = [];
   for (let i = 0; i < 0x30000; i = i + blockSize) {
     const index = blocks.findIndex((b) => {
       const toReturn = arrayEquals(b, unicharMap.slice(i, i + blockSize));
       return toReturn;
     });
-    blockIdxes.push(index);
+    blockIndexes.push(index);
   }
-  // const { pre, arr } = stringifyCompressArray(blockIdxes);
-  toWrite += `   \nconst blockIdxes = new Uint${
-    // toWrite += `   ${pre}\nconst blockIdxes = new Uint${
+  // const { pre, arr } = stringifyCompressArray(blockIndexes);
+  toWrite += `   \nconst blockIndexes = new Uint${
+    // toWrite += `   ${pre}\nconst blockIndexes = new Uint${
     blocks.length < 256 ? 8 : 16
-  }Array([${blockIdxes}]);\n`;
+  }Array([${compressblockIndexes(blockIndexes)}]);\n`;
   // }Array(${arr});\n`;
 
   toWrite += `  const mapStr = "${escapeString(mappedStr)}";\n`;
@@ -347,7 +348,7 @@ function f(e,t) {
       if (codePoint >= 0xE0100 && codePoint <= 0xE01EF) return ${codepoint};
       return 0;
     }
-    return blocks[blockIdxes[codePoint >> ${lgBlockSize}]][codePoint & ${mask}];
+    return blocks[blockIndexes[codePoint >> ${lgBlockSize}]][codePoint & ${mask}];
   }
 
   export {
