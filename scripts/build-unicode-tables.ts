@@ -4,7 +4,6 @@ import path from 'path';
 import {
   compressblockIndexes,
   stringifyBlocks,
-  stringifyCompressArray,
 } from './stringify-compress-array';
 
 const IDNA_MAP_OUTPUT_PATH = path.join(__dirname, '..', 'src', 'idna-map.js');
@@ -317,6 +316,8 @@ instead of this file. \*\/
 function f(e,t) {
   return Array(t).fill(e);
 }
+// shorthand for Uint32Array
+const a = Uint32Array;
 `;
 
   toWrite += stringifyBlocks(blocks as Array<Array<number>>);
