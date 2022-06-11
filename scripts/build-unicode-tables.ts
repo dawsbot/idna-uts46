@@ -330,12 +330,9 @@ function f(e,t) {
     });
     blockIndexes.push(index);
   }
-  // const { pre, arr } = stringifyCompressArray(blockIndexes);
   toWrite += `   \nconst blockIndexes = new Uint${
-    // toWrite += `   ${pre}\nconst blockIndexes = new Uint${
     blocks.length < 256 ? 8 : 16
   }Array([${compressblockIndexes(blockIndexes)}]);\n`;
-  // }Array(${arr});\n`;
 
   toWrite += `  const mapStr = "${escapeString(mappedStr)}";\n`;
 

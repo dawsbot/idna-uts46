@@ -1,4 +1,7 @@
-dist
+dist/*
+# Web bundle should always be available on github raw
+!dist/index.bundle.js
+
 coverage
 node_modules
 npm-debug.log*
