@@ -2,7 +2,7 @@
 // this package benefits most from numbers inside the arrays being deduplicated
 // this alphabet is used to deduplicate the numbers. Note that "f" is used for
 // a shorthand of Array.prototype.fill and thus is not found here
-const alphabet = 'bcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const alphabet = ['b', 'c', 'd'];
 
 export const compressblockIndexes = (blockIndexes: number[]): string => {
   let toReturn = `${blockIndexes.toString()},`;
@@ -45,10 +45,10 @@ export const stringifyBlocks = (blocks: Array<Array<number>>) => {
     .map((block) => `new a([${block.toString()}])`)
     .join(',');
   const toReplace = Object.entries(freq)
-    .filter(([elem, freq]) => freq > 10)
+    .filter(([elem, freq]) => freq > 7)
     .filter(([elem, freq]) => String(elem).length > 1)
     .sort(([, freq1], [, freq2]) => freq2 - freq1)
-    .slice(0, alphabet.length - 2);
+    .slice(0, alphabet.length);
   console.log({ toReplace });
 
   let pre = '';
