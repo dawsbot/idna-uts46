@@ -312,9 +312,13 @@ function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
   let toWrite = `\/\* This file is generated from the Unicode IDNA table, using
 the scripts/build-unicode-tables.ts script. Edit that
 instead of this file. \*\/
+// shorthand for Array.prototype.fill
+function f(e,t) {
+  return Array(t).fill(e);
+}
 `;
 
-  toWrite += stringifyBlocks(blocks as number[]);
+  toWrite += stringifyBlocks(blocks as Array<Array<number>>);
 
   // Now emit the block index map
   let blockIdxes: number[] = [];
@@ -325,10 +329,12 @@ instead of this file. \*\/
     });
     blockIdxes.push(index);
   }
-  const { pre, arr } = stringifyCompressArray(blockIdxes);
-  toWrite += `   ${pre}\nconst blockIdxes = new Uint${
+  // const { pre, arr } = stringifyCompressArray(blockIdxes);
+  toWrite += `   \nconst blockIdxes = new Uint${
+    // toWrite += `   ${pre}\nconst blockIdxes = new Uint${
     blocks.length < 256 ? 8 : 16
-  }Array(${arr});\n`;
+  }Array([${blockIdxes}]);\n`;
+  // }Array(${arr});\n`;
 
   toWrite += `  const mapStr = "${escapeString(mappedStr)}";\n`;
 
