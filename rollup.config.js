@@ -13,12 +13,11 @@ export default {
       file: 'dist/index.bundle.js',
       format: 'iife',
       name: 'idnaUts46',
-      plugins: [terser()],
+      plugins: [terser(), bundleSize()],
     },
   ],
   plugins: [
     // needed to resolve punycode from import not node's builtin
-    bundleSize(),
     nodeResolve({ preferBuiltins: false }),
   ],
 };
