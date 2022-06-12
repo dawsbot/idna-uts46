@@ -335,24 +335,21 @@ const a = Uint32Array;
     blocks.length < 256 ? 8 : 16
   }Array([${compressblockIndexes(blockIndexes)}]);\n`;
 
-  toWrite += `  const mapStr = "${escapeString(mappedStr)}";\n`;
+  toWrite += `const mapStr = '${escapeString(mappedStr)}';\n`;
 
   // Finish off with the function to actually look everything up
   const codepoint = unicharMap[0xe0100];
   const mask = (1 << lgBlockSize) - 1;
-  toWrite += `  function mapChar(codePoint) {
-    if (codePoint >= 0x30000) {
-      // High planes are special cased.
-      if (codePoint >= 0xE0100 && codePoint <= 0xE01EF) return ${codepoint};
-      return 0;
-    }
-    return blocks[blockIndexes[codePoint >> ${lgBlockSize}]][codePoint & ${mask}];
+  toWrite += `function mapChar(codePoint) {
+  if (codePoint >= 0x30000) {
+    // High planes are special cased.
+    if (codePoint >= 0xe0100 && codePoint <= 0xe01ef) return ${codepoint};
+    return 0;
   }
+  return blocks[blockIndexes[codePoint >> ${lgBlockSize}]][codePoint & ${mask}];
+}
 
-  export {
-    mapStr,
-    mapChar,
-  };
+export { mapStr, mapChar };
 `;
   fs.writeFileSync(IDNA_MAP_OUTPUT_PATH, toWrite);
 }
