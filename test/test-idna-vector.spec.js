@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 const fs = require('fs');
-const uts46 = require('../uts46');
+const uts46 = require('../dist/index.cjs');
 
 function matchInaneIDNARules(result, tooLong) {
   let labels = result.split('.');

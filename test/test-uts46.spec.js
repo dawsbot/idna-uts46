@@ -1,7 +1,6 @@
 //"use strict";
-
 const assert = require('assert');
-const uts46 = require('../uts46');
+const uts46 = require('../dist/index.cjs');
 
 suite('toASCII', function () {
   test('Convert method tests', function () {
@@ -555,5 +554,12 @@ suite('unicode.org', function () {
       'xn--mgba3gch31f060k.de',
     );
     /* jshint +W100 */
+
+    // common emojis
+    assert.strict.equal(uts46.toAscii('😂'), 'xn--g28h');
+    assert.strict.equal(uts46.toAscii('🫡'), 'xn--229h');
+
+    assert.strict.equal(uts46.toUnicode('xn--g28h'), '😂');
+    assert.strict.equal(uts46.toUnicode('xn--229h'), '🫡');
   });
 });
