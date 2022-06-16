@@ -41,7 +41,7 @@
     "lint": "eslint .",
     "prepare": "husky install",
     "build:unicode-tables": "esr scripts/build-unicode-tables.ts 14.0.0",
-    "build:rollup": "rollup -c && rollup -c rollup-esm.config"
+    "build:rollup": "rollup -c scripts/rollup.config && rollup -c scripts/rollup-esm.config"
   },
   "dependencies": {
     "punycode": "^2.1.1"
