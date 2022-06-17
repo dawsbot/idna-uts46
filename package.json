@@ -17,25 +17,25 @@
   "size-limit": [
     {
       "path": "dist/index.esm.js",
-      "limit": "32.15 kB"
+      "limit": "32142 B"
     },
     {
       "name": "toAscii",
       "path": "dist/index.esm.js",
       "import": "{ toAscii }",
-      "limit": "31.93 kB"
+      "limit": "31922 B"
     },
     {
       "name": "toUnicode",
       "path": "dist/index.esm.js",
       "import": "{ toUnicode }",
-      "limit": "31.34 kB"
+      "limit": "31327 B"
     },
     {
       "name": "convert",
       "path": "dist/index.esm.js",
       "import": "{ convert }",
-      "limit": "32.14 kB"
+      "limit": "32133 B"
     }
   ],
   "keywords": [

@@ -231,19 +231,20 @@ function computeBlockSize(unicharMap: any[], blockSize: number) {
   memUsage += num * blockSize * 4;
   return { memUsage, blocks };
 }
+
+/**
+ * Prepend backslash to all special characters which require escaping
+ */
 function escapeString(str: string) {
   const entityMap = {
     $: '$',
     "'": "'",
-    '/': '/',
-    // '\\': '\\',
-    '`': '`',
-    '=': '=',
   };
-  return str.replace(/[$'`=\/]/g, function (s) {
+  return str.replace(/[$']/g, function (s) {
     return `\\${entityMap[s]}`;
   });
 }
+
 function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
   console.log('Build Unicode Map');
   let unicharMap: any[] = [];
