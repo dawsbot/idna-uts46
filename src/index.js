@@ -5,15 +5,15 @@ function mapLabel(label, useStd3ASCII, transitional) {
   const mapped = [];
   const chars = ucs2decode(label);
   for (let i = 0; i < chars.length; i++) {
-    const cp = chars[i];
+    // const cp = chars[i];
     const ch = ucs2encode([chars[i]]);
-    const composite = mapChar(cp);
-    const flags = composite >> 23;
+    const composite = mapChar(chars[i]);
+    // const flags = composite >> 23;
     const kind = (composite >> 21) & 3;
-    const index = (composite >> 5) & 0xffff;
-    const length = composite & 0x1f;
-    const value = mapStr.substr(index, length);
-    if (kind === 0 || (useStd3ASCII && flags & 1)) {
+    // const index = (composite >> 5) & 0xffff;
+    // const length = composite & 0x1f;
+    const value = mapStr.substr((composite >> 5) & 0xffff, composite & 0x1f);
+    if (kind === 0 || (useStd3ASCII && (composite >> 23) & 1)) {
       throw new Error('Illegal char ' + ch);
     } else if (kind === 1) {
       mapped.push(value);
