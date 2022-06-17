@@ -234,17 +234,13 @@ function computeBlockSize(unicharMap: any[], blockSize: number) {
 function escapeString(str: string) {
   const entityMap = {
     $: '$',
-    '&': '&',
-    '<': '<',
-    '>': '>',
-    '"': '"',
     "'": "'",
     '/': '/',
     // '\\': '\\',
     '`': '`',
     '=': '=',
   };
-  return str.replace(/[$&<>"'`=\/]/g, function (s) {
+  return str.replace(/[$'`=\/]/g, function (s) {
     return `\\${entityMap[s]}`;
   });
 }
