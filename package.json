@@ -14,6 +14,30 @@
   "homepage": "https://github.com/dawsbot/idna-uts46",
   "repository": "github:dawsbot/idna-uts46",
   "bugs": "https://github.com/dawsbot/idna-uts46/issues",
+  "size-limit": [
+    {
+      "path": "dist/index.esm.js",
+      "limit": "32.15 kB"
+    },
+    {
+      "name": "toAscii",
+      "path": "dist/index.esm.js",
+      "import": "{ toAscii }",
+      "limit": "31.93 kB"
+    },
+    {
+      "name": "toUnicode",
+      "path": "dist/index.esm.js",
+      "import": "{ toUnicode }",
+      "limit": "31.34 kB"
+    },
+    {
+      "name": "convert",
+      "path": "dist/index.esm.js",
+      "import": "{ convert }",
+      "limit": "32.14 kB"
+    }
+  ],
   "keywords": [
     "unicode",
     "idn",
@@ -41,13 +65,15 @@
     "lint": "eslint .",
     "prepare": "husky install",
     "build:unicode-tables": "esr scripts/build-unicode-tables.ts 14.0.0",
-    "build:rollup": "rollup -c scripts/rollup.config && rollup -c scripts/rollup-esm.config"
+    "build:rollup": "rollup -c scripts/rollup.config && rollup -c scripts/rollup-esm.config",
+    "size-limit": "size-limit"
   },
   "dependencies": {
     "punycode": "^2.1.1"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.3.0",
+    "@size-limit/preset-small-lib": "^7.0.8",
     "@types/axios": "^0.14.0",
     "axios": "^0.27.2",
     "cross-env": "^7.0.3",
@@ -64,6 +90,7 @@
     "rollup": "^2.75.6",
     "rollup-plugin-bundle-size": "^1.0.3",
     "rollup-plugin-terser": "^7.0.2",
+    "size-limit": "^7.0.8",
     "ts-node": "^10.8.1"
   },
   "lint-staged": {
