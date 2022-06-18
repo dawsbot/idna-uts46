@@ -25,8 +25,7 @@ function mapLabel(label, useStd3ASCII, transitional) {
     }
   }
 
-  const newLabel = mapped.join('').normalize('NFC');
-  return newLabel;
+  return mapped.join('').normalize('NFC');
 }
 
 function process(domain, transitional, useStd3ASCII) {
@@ -40,7 +39,7 @@ function process(domain, transitional, useStd3ASCII) {
   let labels = mappedIDNA.split('.');
 
   // Step 4. Convert/Validate
-  labels = labels.map(function (label) {
+  labels = labels.map((label) => {
     if (label.startsWith('xn--')) {
       label = decode(label.substring(4));
       validateLabel(label, useStd3ASCII, false);
@@ -96,12 +95,11 @@ function toAscii(domain, options) {
   const labels = process(domain, transitional, useStd3ASCII).split('.');
   const asciiLabels = labels.map(toASCII);
   const asciiString = asciiLabels.join('.');
-  let i;
   if (verifyDnsLength) {
     if (asciiString.length < 1 || asciiString.length > 253) {
       throw new Error('DNS name has wrong length: ' + asciiString);
     }
-    for (i = 0; i < asciiLabels.length; i++) {
+    for (let i = 0; i < asciiLabels.length; i++) {
       // for .. of replacement
       const label = asciiLabels[i];
       if (label.length < 1 || label.length > 63) {

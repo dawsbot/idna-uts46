@@ -18,7 +18,7 @@ export const compressblockIndexes = (blockIndexes: number[]): string => {
     } else {
       // streak ends
       const toReplace = `,${blockIndexes.slice(startIndex, i).toString()},`;
-      const replaceWith = `,...f(${streakNumber},${streakLength}),`;
+      const replaceWith = `,...Array.fill(${streakLength},${streakNumber}),`;
       // if array fill text is shorter than what was there, replace it
       if (replaceWith.length < toReplace.length + 2) {
         toReturn = toReturn.replace(toReplace, replaceWith);

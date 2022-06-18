@@ -16,26 +16,32 @@
   "bugs": "https://github.com/dawsbot/idna-uts46/issues",
   "size-limit": [
     {
-      "path": "dist/index.esm.js",
-      "limit": "32127 B"
+      "name": "Browser Bundle",
+      "path": "dist/index.bundle.js",
+      "limit": "32312 B"
     },
     {
-      "name": "toAscii",
+      "name": "esm - All of it",
+      "path": "dist/index.esm.js",
+      "limit": "32079 B"
+    },
+    {
+      "name": "esm `toAscii` fn",
       "path": "dist/index.esm.js",
       "import": "{ toAscii }",
-      "limit": "31912 B"
+      "limit": "31862 B"
     },
     {
-      "name": "toUnicode",
+      "name": "esm `toUnicode` fn",
       "path": "dist/index.esm.js",
       "import": "{ toUnicode }",
-      "limit": "31312 B"
+      "limit": "31267 B"
     },
     {
-      "name": "convert",
+      "name": "esm `convert` fn",
       "path": "dist/index.esm.js",
       "import": "{ convert }",
-      "limit": "32121 B"
+      "limit": "32071 B"
     }
   ],
   "keywords": [

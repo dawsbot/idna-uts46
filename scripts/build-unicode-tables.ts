@@ -309,11 +309,6 @@ function buildUnicodeMap(idnaMapTable: string, derivedGeneralCategory: string) {
   let toWrite = `\/\* This file is generated from the Unicode IDNA table, using
 the scripts/build-unicode-tables.ts script. Edit that
 instead of this file. \*\/
-// shorthand for Array.prototype.fill
-function f(e,t) {
-  return Array(t).fill(e);
-}
-// shorthand for Uint32Array
 const a = Uint32Array;
 `;
 
